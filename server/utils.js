@@ -33,6 +33,9 @@ export function getName() {
         sy = (Boolean(Math.round(Math.random()))) ? `${sy}u` : sy;
       }
     }
+    if (sy.match(/l|n|c/)) {
+      sy = (Boolean(Math.round(Math.random()))) ? `${sy}h` : sy;
+    }
     if (i === 0 && startWithVowel) {
       name = `${name}${vo}`;
     } else {
@@ -45,4 +48,10 @@ export function getName() {
     }
   }
   return name;
+}
+
+export function distanceToPoint(x1, y1, x2, y2) {
+  let a = x1 - x2
+  let b = y1 - y2
+  return Math.sqrt( a*a + b*b );
 }

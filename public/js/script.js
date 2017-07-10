@@ -26,3 +26,12 @@ socket.on('DataPackage', function(data) {
   settings = data.world;
   init();
 });
+
+socket.on('DataUpdate', function(data) {
+  data.population.forEach(function(obj) {
+    $('#' + obj.id).css({
+      top: obj.y,
+      left: obj.x
+    });
+  });
+});
