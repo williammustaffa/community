@@ -10,24 +10,38 @@ export function choose(...props) {
 
 export function getName() {
   const endSyllables = ['r', 's', 'h', 'z'];
-  const syllables = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'x', 'y', 'z', 'w'];
-  const vowels = ['a', 'e', 'i', 'o', 'u'];
+  const syllables = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'x', 'z', 'w'];
+  const vowels = ['a', 'e', 'i', 'o', 'u', 'y'];
   const nOfSy = getRandomInt(2, 4);
   let name = '';
   let startWithVowel = Boolean(Math.round(Math.random()));
   let endsWithSyllables = Boolean(Math.round(Math.random()));
-  let sy, vo, es;
+  let sy, vo, es, rs;
   for (let i=0; i<nOfSy; i++) {
     sy = syllables[getRandomInt(0, syllables.length - 1)];
     vo = vowels[getRandomInt(0, vowels.length - 1)];
     es = endSyllables[getRandomInt(0, endSyllables.length - 1)];
+    rs = endSyllables[getRandomInt(0, endSyllables.length - 1)];
+    if (sy === 'q') {
+      sy = `${sy}u`;
+      while(vo === 'u') {
+        vo = vowels[getRandomInt(0, vowels.length - 1)];
+      }
+    }
+    if (sy === 'g') {
+      if (vo !== 'u') {
+        sy = (Boolean(Math.round(Math.random()))) ? `${sy}u` : sy;
+      }
+    }
     if (i === 0 && startWithVowel) {
       name = `${name}${vo}`;
     } else {
       name = `${name}${sy}${vo}`;
     }
-    if (endsWithSyllables) {
+    if (endsWithSyllables && i === nOfSy - 1) {
       name = `${name}${es}`;
+    } else if (Boolean(Math.round(Math.random()))) {
+      name  = `${name}${rs}`;
     }
   }
   return name;
