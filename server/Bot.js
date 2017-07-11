@@ -2,15 +2,17 @@ import uuid from 'uuid';
 import { getRandomInt, getName, choose, distanceToPoint, prepareMessage } from './utils';
 import { WORLD_SETTINGS } from './index.js';
 import Chat from './Chat';
+import Interests from './Interests';
 
 export default class Bot {
   constructor(props = {}) {
+    const botInterests = new Interests();
     this.id = uuid.v4();
     this.avatar = `https://api.adorable.io/avatars/32/${this.id}.png`
     this.name = props.name || getName();
-    this.greetings = ['Hi %subject%'];
-    this.topics = ['I\'m talking with you, %subject%!'];
-    this.gooodbyes = ['Goodbye, %subject%! See ya :)'];
+    this.greetings = botInterests.greetings;
+    this.topics = botInterests.topics;
+    this.goodbyes = botInterests.goodbyes;
     this.energy = 500;
     this.age = 0;
     this.sex = choose('Male', 'Female');
@@ -23,6 +25,7 @@ export default class Bot {
     this.maxSpeed = getRandomInt(4, 8) + this.methabolism;
     this.conversation = null;
     this.chatting = false;
+    this.charisma = props.charisma || getRandomInt(-10, 10);
     this.state = {
       busy: false,
       isTalking: false,
@@ -52,6 +55,7 @@ export default class Bot {
     this.nextY = this.y;
     this.setState({
       isWalking: false,
+      isTalking: false,
       busy: false,
     });
   }
@@ -99,8 +103,8 @@ export default class Bot {
           }
         }
       });
-      if (distanceToPoint(this.x, this.y, nearestBot.x, nearestBot.y) < 50 && !this.state.busy && !nearestBot.state.busy) {
-        console.log("A CONVERSATION HAS STARTED");
+      let shouldStartConversation =  !this.state.busy && !nearestBot.state.busy && this.charisma > 0;
+      if (distanceToPoint(this.x, this.y, nearestBot.x, nearestBot.y) < 50 && shouldStartConversation) {
         let chatInstance = new Chat({
           bots: [this, nearestBot],
         });
@@ -122,6 +126,36 @@ export default class Bot {
     }
   }
 
+  answer = (messageDetails) => {
+    let message, topicReaction;
+    let pronoum = (this.sex == 'Male')? 'his' : 'her';
+    let reactions = [
+      `hates with all ${pronoum} heart`,
+      'hates',
+      'dislikes',
+      'doesn\'t like',
+      'doesn\'t know anything about',
+      'barelly knows about',
+      'have heard of',
+      'likes',
+      'is interested in',
+      `love with all ${pronoum} heart`,
+    ];
+    let topicInterest = this.topics.filter(topic => topic.topic === messageDetails.topic);
+    if (topicInterest.length) {
+      topicReaction = reactions[topicInterest[0].interest + 5];
+    } else {
+      topicReaction = 'didn\'t understand';
+    }
+    message = `${this.name} ${topicReaction} ${messageDetails.topic}`;
+    return {
+      message,
+      speaker: this.name,
+      speakerId: this.id,
+      time: new Date(),
+    }
+  }
+
   greets = (lobbyBots) => {
     let greeting = this.greetings[getRandomInt(0, this.greetings.length - 1)];
     let subject; 
@@ -136,6 +170,7 @@ export default class Bot {
     });
     return {
       message,
+      topic: 'greeting',
       speaker: this.name,
       speakerId: this.id,
       time: new Date(),
@@ -143,19 +178,21 @@ export default class Bot {
   }
 
   speaks = (lobbyBots) => {
-    let topic = this.topics[getRandomInt(0, this.topics.length - 1)];
+    let topic = this.topics[getRandomInt(0, this.topics.length - 1)].topic;
     let subject; 
     if (lobbyBots.length > 2) {
       subject = 'everyone';
     } else {
       subject = lobbyBots.filter(bot => bot.id !== this.id)[0].name;
     }
-    let message = prepareMessage(topic, {
+    let message = prepareMessage(`%speaker% is talking about %topic%`, {
       speaker: this.name,
+      topic,
       subject,
     });
     return {
       message,
+      topic,
       speaker: this.name,
       speakerId: this.id,
       time: new Date(),
@@ -164,8 +201,19 @@ export default class Bot {
 
   goodbye = (lobbyBots) => {
     let goodbye = this.goodbyes[getRandomInt(0, this.goodbyes.length - 1)];
+    let subject; 
+    if (lobbyBots.length > 2) {
+      subject = 'everyone';
+    } else {
+      subject = lobbyBots.filter(bot => bot.id !== this.id)[0].name;
+    };
+    let message = prepareMessage(goodbye, {
+      speaker: this.name,
+      topic: 'goodbye',
+      subject,
+    });
     return {
-      message: `${this.name} is talking about ${topic.name}`,
+      message,
       speaker: this.name,
       speakerId: this.id,
       time: new Date(),
