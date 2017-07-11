@@ -19,9 +19,64 @@
   height: 24px;
   position: absolute;
   display: block;
+  cursor: pointer;
+}
+
+.balloon-wrapper {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bot-name, .ballon-wrapper {
+  transition: 0.5s all;
+}
+
+.balloon {
+  background: white;
+  border-radius: 3px;
+  padding: 3px 5px;
+  text-align: center;
+  white-space: nowrap;
+  margin-bottom: 10px;
+}
+
+.balloon:after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 0;
+  width: 0;
+  border-top: 4px solid white;
+  border-bottom: 4px solid transparent;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+}
+
+.balloon span {
+  height: 4px;
+  width: 4px;
+  background: #222;
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin: 0 2.5px;
+}
+
+.bot[data-talking="true"] .balloon-wrapper {
+  display: block;
+}
+
+.bot:hover .bot-name {
+  display: block;
 }
 
 .bot-name {
+  display: none;
   font-size: 11px;
   color: white;
   background: black;

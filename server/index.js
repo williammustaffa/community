@@ -1,10 +1,12 @@
 import Bot from './Bot';
+import { distanceToPoint } from './utils';
 
 const INITIAL_POPULATION = 5;
 export const WORLD_SETTINGS = {
   width: 640,
   height: 480,
   timeout: 60,
+  lobbys: [],
 };
 
 export default class Server {
@@ -19,7 +21,7 @@ export default class Server {
   step = (io) => {
 
     this.population.map(bot => {
-      bot.step();
+      bot.step(this.population.filter(_bot => _bot.id !== bot.id ));
     });
 
     io.emit('DataUpdate', {

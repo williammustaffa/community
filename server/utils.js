@@ -55,3 +55,18 @@ export function distanceToPoint(x1, y1, x2, y2) {
   let b = y1 - y2
   return Math.sqrt( a*a + b*b );
 }
+
+export function prepareMessage(message, vars) {
+  const variables = {
+    speaker: '',
+    subject: '',
+    topic: '',
+    react: '',
+    ...vars,
+  };
+  message = message.replace('%speaker%', variables.speaker);
+  message = message.replace('%subject%', variables.subject);
+  message = message.replace('%topic%', variables.topic);
+  message = message.replace('%reaction%', variables.react);
+  return message;
+}
