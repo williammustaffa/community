@@ -7,11 +7,18 @@
   -webkit-appearance: none;
 }
 
+body {
+  background: black;
+}
+
 #window {
   width: 100%;
   height: 100%;
-  position: absolute;
-  background: #222;
+  position: relative;
+  display: block;
+  background: rgb(32, 36, 62);
+  border-radius: 10px;
+  margin: 40px auto 0;
 }
 
 .bot {
@@ -96,7 +103,7 @@
   width: 100%;
   height: 100%;
   position: absolute;
-  border-radius: 50%;
+  border-radius: 5px;
   overflow: hidden;
 }
 
